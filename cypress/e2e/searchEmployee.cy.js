@@ -25,7 +25,7 @@ describe('Recherche d’un employé', () => {
         cy.get('input[placeholder="Type for hints..."]')
             .first()
             .should('be.visible')
-            .type('PAN Jeremie', { delay: 150, scrollBehavior: false });
+            .type('MISTER Peter', { delay: 150, scrollBehavior: false });
 
         cy.wait(1000);
 
@@ -48,7 +48,7 @@ describe('Recherche d’un employé', () => {
                 // Tout ce qui dépend d’un résultat existe doit être ici
                 cy.scrollTo('bottom', { duration: 1200 });
                 cy.get('div.oxd-table', { timeout: 30000 })
-                    .contains('PAN Jeremie')
+                    .contains('MISTER')
                     .should('be.visible');
             }
         });
@@ -69,7 +69,7 @@ describe('Recherche d’un employé', () => {
         cy.contains('button', 'Search')
             .should('be.visible')
             .click();
-            
+
         cy.wait(800);
 
         // Vérifier que "No Records Found" apparaît
