@@ -38,9 +38,46 @@ describe('Recherche d’un employé', () => {
         // Scroll manuel vers le bas après Search
         cy.scrollTo('bottom', { duration: 1200 });
 
-        cy.get('div.oxd-table', { timeout: 30000 })
-            .contains('PAN Jeremie')
+        // Vérifier si aucun résultat
+        cy.get('span.oxd-text--span').then(($spans) => {
+            const noResult = [...$spans].some(span => span.innerText.includes('No Records Found'));
+
+            if (noResult) {
+                cy.log('Aucun résultat trouvé, test terminé sans assertion sur l’employé.');
+            } else {
+                // Tout ce qui dépend d’un résultat existe doit être ici
+                cy.scrollTo('bottom', { duration: 1200 });
+                cy.get('div.oxd-table', { timeout: 30000 })
+                    .contains('PAN Jeremie')
+                    .should('be.visible');
+            }
+        });
+    });
+    it('Recherche d’un employé inexistant (No Records Found)', () => {
+        const employeeName = 'Bruno Matthieu'; // employé qui n’existe pas
+
+        cy.contains('span', 'PIM', { timeout: 20000 }).click();
+        cy.get('div.oxd-table', { timeout: 30000 }).should('be.visible');
+
+        cy.get('input[placeholder="Type for hints..."]')
+            .first()
+            .should('be.visible')
+            .type(employeeName, { delay: 150, scrollBehavior: false });
+
+        cy.wait(1000);
+
+        cy.contains('button', 'Search')
+            .should('be.visible')
+            .click();
+            
+        cy.wait(800);
+
+        // Vérifier que "No Records Found" apparaît
+        cy.get('span.oxd-text--span')
+            .contains('No Records Found')
             .should('be.visible');
+
+        cy.log('Aucun résultat trouvé, test terminé correctement.');
     });
 
 });

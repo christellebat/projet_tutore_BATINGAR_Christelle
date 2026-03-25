@@ -1,65 +1,53 @@
-import LoginPage from '../pages/LoginPage';
+import { faker } from '@faker-js/faker';
 
 describe('Gestion des employés', () => {
 
     beforeEach(() => {
         cy.fixture('users.json').then((users) => {
-            const valid = users.validUser;
-            LoginPage.visit();
-            LoginPage.login(valid.username, valid.password);
-
-            // attendre le menu latéral du dashboard
-            cy.get('.oxd-sidepanel-body', { timeout: 20000 }).should('be.visible');
+            cy.login(users.validUser.username, users.validUser.password);
         });
     });
 
-    it('Ajouter un employé PAN PO Jeremie', () => {
-        // cliquer sur PIM
-        cy.get('span.oxd-main-menu-item--name', { timeout: 20000 })
-            .contains('PIM')
-            .click();
+    // TEST POSITIF
+    it('Ajouter un employé dynamique sans conflit ID', () => {
+        const employee = {
+            firstName: faker.person.firstName(),
+            middleName: faker.person.middleName(),
+            lastName: faker.person.lastName()
+        };
 
-        // attendre que les onglets PIM soient visibles
-        cy.get('a.oxd-topbar-body-nav-tab-item', { timeout: 20000 })
-            .should('be.visible');
+        cy.contains('span', 'PIM', { timeout: 20000 }).click();
+        cy.contains('a', 'Add Employee', { timeout: 20000 }).click();
+        cy.get('div.oxd-form-loader', { timeout: 30000 }).should('not.exist');
 
-        // cliquer sur Add Employee
-        cy.get('a.oxd-topbar-body-nav-tab-item')
-            .contains('Add Employee')
-            .click();
+        cy.createEmployee(employee); // retry intégré
+    });
 
-        // attendre que le loader disparaisse
-        cy.get('div.oxd-form-loader', { timeout: 30000 })
-            .should('not.exist');
+    // TEST NEGATIF : champs obligatoires vides
+    it('Afficher erreurs si champs obligatoires non remplis', () => {
+        cy.contains('span', 'PIM').click();
+        cy.contains('a', 'Add Employee').click();
+        cy.get('div.oxd-form-loader').should('not.exist');
 
-        // remplir les champs obligatoires uniquement
-        cy.get('input[name="firstName"]', { timeout: 10000 })
-            .should('be.visible')
-            .and('not.be.disabled')
-            .type('PAN');
+        cy.contains('button', 'Save').click();
 
-        cy.get('input[name="middleName"]')
-            .type('PO');
+        cy.contains('Required').should('be.visible');
+        cy.get('.oxd-input-field-error-message').should('have.length.at.least', 2);
+    });
 
-        cy.get('input[name="lastName"]')
-            .type('Jeremie');
+    // TEST NEGATIF : Last Name > 30 caractères
+    it('Afficher une erreur si le Last Name dépasse 30 caractères', () => {
+        const longLastName = faker.string.alpha(31);
 
-        // cliquer sur Save
-        cy.get('button[type="submit"]')
-            .contains('Save')
-            .should('be.visible')
-            .and('not.be.disabled')
-            .click();
+        cy.contains('span', 'PIM').click();
+        cy.contains('a', 'Add Employee').click();
+        cy.get('div.oxd-form-loader').should('not.exist');
 
-        // attendre Employee List
-        cy.get('a.oxd-topbar-body-nav-tab-item', { timeout: 30000 })
-            .contains('Employee List')
-            .should('be.visible');
+        cy.get('input[name="firstName"]').type(faker.person.firstName(), { delay: 100 });
+        cy.get('input[name="lastName"]').type(longLastName, { delay: 100 });
 
-        // vérifier que l'employé ajouté est visible
-        cy.get('h6.oxd-text--h6', { timeout: 30000 })
-            .contains('PAN Jeremie')
-            .should('be.visible');
+        cy.contains('button', 'Save').click();
+        cy.contains('Should not exceed 30 characters').should('be.visible');
     });
 
 });

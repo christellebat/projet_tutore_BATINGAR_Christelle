@@ -2,30 +2,28 @@ import LoginPage from '../pages/LoginPage';
 
 describe('Login OrangeHRM', () => {
 
-    it('Login valide', () => {
+    beforeEach(() => {
         cy.fixture('users.json').then((users) => {
-            const valid = users.validUser;
-
             LoginPage.visit();
-            LoginPage.login(valid.username, valid.password);
-
-            // attendre que le menu latéral et la barre du dashboard soient visibles
-            cy.get('.oxd-sidepanel-body').should('be.visible');
-            cy.get('.oxd-topbar-header').should('be.visible');
         });
     });
 
-    it('Login invalide', () => {
+    it('Connexion valide avec pauses', () => {
         cy.fixture('users.json').then((users) => {
-            const invalid = users.invalidUser;
+            const valid = users.validUser;
+            cy.log('Saisie identifiant');
+            LoginPage.login(valid.username, valid.password, { delay: 100 });
+            cy.wait(1000);
 
-            LoginPage.visit();
-            LoginPage.login(invalid.username, invalid.password);
-
-            // vérifier que le message d’erreur apparaît
-            cy.get('.oxd-alert-content-text')
-                .should('contain.text', 'Invalid credentials');
+            cy.url().should('include', '/dashboard');
+            cy.log('Dashboard affiché');
         });
+    });
+
+    it('Connexion invalide', () => {
+        LoginPage.login('Admin', 'wrongpassword', { delay: 100 });
+        cy.wait(500);
+        cy.contains('Invalid credentials').should('be.visible');
     });
 
 });

@@ -1,7 +1,11 @@
-describe('Suppression d’un employé - démo fluide', () => {
+describe('Suppression d’un employé', () => {
 
     beforeEach(() => {
-        Cypress.on('uncaught:exception', () => false);
+        // Ignorer les erreurs uncaught venant de l'application
+        Cypress.on('uncaught:exception', (err, runnable) => {
+            console.warn('Erreur ignorée :', err.message);
+            return false; // Empêche l’échec du test
+        });
 
         cy.fixture('users.json').then((users) => {
             const valid = users.validUser;
@@ -16,57 +20,52 @@ describe('Suppression d’un employé - démo fluide', () => {
         });
     });
 
-    it('Supprimer un employé avec gestion No Records Found', () => {
+    it('Supprimer un employé existant', () => {
+        const employeeName = 'PAN';
 
-        //  Aller dans PIM
         cy.contains('span', 'PIM', { timeout: 20000 }).click();
+        cy.contains('a', 'Employee List', { timeout: 20000 }).click();
 
-        //  Attendre que le tableau soit visible
-        cy.get('div.oxd-table', { timeout: 30000 }).should('be.visible');
-
-        //  Saisir le nom dans Employee Name
+        // Saisie de l'employé à supprimer (uniquement le champ visible)
         cy.get('input[placeholder="Type for hints..."]')
+            .filter(':visible')
             .first()
             .should('be.visible')
-            .clear()
-            .type('PAN Jeremie', { delay: 150, scrollBehavior: false });
+            .type(employeeName, { delay: 150, scrollBehavior: false });
 
-        cy.wait(1000); // pause pour voir la saisie
-
-        //  Cliquer sur Search
         cy.contains('button', 'Search')
             .should('be.visible')
             .click();
-
         cy.wait(800);
 
-        //  Vérifier si aucun résultat
-        cy.get('span.oxd-text--span').then(($el) => {
-            if ($el.text().includes('No Records Found')) {
+        // Vérifier si "No Records Found"
+        cy.get('span.oxd-text--span').then(($spans) => {
+            const noResult = [...$spans].some(span => span.innerText.includes('No Records Found'));
+
+            if (noResult) {
                 cy.log('Aucun employé trouvé, rien à supprimer.');
-                return; // arrêter le test ici sans erreur
+            } else {
+                // Scroll vers le bas pour voir le résultat
+                cy.scrollTo('bottom', { duration: 1200 });
+
+                // Cliquer sur l’icône corbeille
+                cy.get('i.bi-trash').first().click();
+
+                // Confirmer la suppression
+                cy.contains('button', 'Yes, Delete').click();
+
+                // Vérifier que l’employé n’apparaît plus
+                cy.get('input[placeholder="Type for hints..."]')
+                    .filter(':visible')
+                    .first()
+                    .clear()
+                    .type(employeeName, { delay: 150, scrollBehavior: false });
+
+                cy.contains('button', 'Search').click();
+                cy.get('span.oxd-text--span')
+                    .contains('No Records Found')
+                    .should('be.visible');
             }
-
-            // Sinon, continuer la suppression
-            cy.scrollTo('bottom', { duration: 1200 });
-            cy.wait(500);
-
-            cy.get('i.bi-trash', { timeout: 20000 }).first().click();
-
-            cy.get('p.oxd-text--p', { timeout: 10000 })
-                .should('contain.text', 'The selected record will be permanently deleted');
-
-            cy.wait(800);
-
-            cy.contains('button', 'Yes, Delete')
-                .should('be.visible')
-                .click();
-
-            cy.wait(1000);
-
-            // Vérifier que l'employé n'est plus dans le tableau
-            cy.get('div.oxd-table', { timeout: 30000 })
-                .should('not.contain', 'PAN');
         });
     });
 
