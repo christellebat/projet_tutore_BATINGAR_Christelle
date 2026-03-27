@@ -1,107 +1,76 @@
-#  Rapport d'exécution
+#  Exécution des tests
 
-##  Résumé
+##  Objectif
 
-| Test            | Résultat|
-| --------------- | ------- |
-| Login           |  OK     |
-| Logout          |  OK     |
-| Ajout employé   |  OK     |
-| Recherche       |  OK     |
-| Suppression     |  OK     |
-| Change Password |  KO     |
+Présenter les résultats des tests automatisés.
+
+---
+
+## Lancement des tests
+
+```shell
+npx cypress run
+```
+
+---
+
+## Résultats
+
+*  Tests réussis : 9
+*  Tests échoués : 1
+
+---
+
+##  Détail des résultats
+
+| Test                    |Résultat |
+| ----------------------- | ------- |
+| Login valide            |  OK     |
+| Login invalide          |  OK     |
+| Ajout employé           |  OK     |
+| Champs vides            |  OK     |
+| Nom trop long           |  OK     |
+| Recherche               |  OK     |
+| Recherche inexistante   |  OK     |
+| Suppression             |  OK     |
+| Logout                  |  OK     |
+| Changement mot de passe |  KO     |
+
+---
+
+## Anomalie détectée
+
+### Changement de mot de passe
+
+* Le mot de passe est modifié
+* Impossible de se reconnecter avec le nouveau
+* L’ancien mot de passe ne fonctionne plus
+
+ Impact critique
+
+---
+
 
 ---
 
 ## Analyse
 
-* 5 tests réussis
-* 1 test en échec
-
-Taux de réussite : **83%**
-
----
-
-#  Anomalie : Changement de mot de passe
-
-## Données utilisées
-
-```json
-{
-  "username": "Admin",
-  "oldPassword": "admin123",
-  "newPassword": "humain1234"
-}
-```
-
----
-
-## Étapes détaillées (reproductibles)
-
-1. Accéder à l’application
-
-2. Se connecter :
-
-   * Username : Admin
-   * Password : admin123
-
-3. Aller dans "Change Password"
-
-4. Remplir :
-
-   * Current : admin123
-   * New : humain1234
-   * Confirm : humain1234
-
-5. Cliquer sur Save
-
----
-
-## Résultat obtenu
-
-Impossible de se reconnecter avec :
-
-* Admin / humain1234
-
-Message :
-"Invalid credentials"
-
----
-
-##  Test avec ancien mot de passe
-
-Connexion réussie avec :
-
-* Admin / admin123
-
----
-
-## Résultat attendu
-
-Le nouveau mot de passe doit être pris en compte.
-
----
-
-##  Résultat réel
-
-Le mot de passe n’est pas sauvegardé.
-
----
-
-##  Gravité
-
-CRITIQUE
-
----
-
-##  Recommandations
-
-* Corriger la sauvegarde du mot de passe
-* Ajouter des tests backend
-* Vérifier la base de données
+* Application globalement fonctionnelle
+* Présence d’un bug critique
 
 ---
 
 ## Conclusion
 
-Les tests automatisés ont permis d’identifier une anomalie critique impactant la sécurité utilisateur.
+Les tests automatisés ont permis :
+
+* De valider les fonctionnalités principales
+* De détecter une anomalie importante
+
+---
+
+## Références
+
+* Conception.md
+* Automatisation.md
+* Rapport_anomalie.md

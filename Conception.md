@@ -42,12 +42,7 @@ Chaque test possède :
 - des prérequis
 - des résultats attendus
 
-Exemple :
 
-| ID | Nom | Type |
-|----|-----|------|
-| JIRA-01 | Login Admin | Automatisé |
-| JIRA-02 | Login KO | Manuel |
 
 ## Cas de test
 
