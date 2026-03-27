@@ -6,7 +6,7 @@ describe('Déconnexion', () => {
         });
     });
 
-    it('Se déconnecter avec pauses', () => {
+    it('Se déconnecter ', () => {
 
         // Ignore les erreurs uncaught venant de l'application
         Cypress.on('uncaught:exception', (err, runnable) => {

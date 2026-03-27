@@ -8,7 +8,7 @@ describe('Login OrangeHRM', () => {
         });
     });
 
-    it('Connexion valide avec pauses', () => {
+    it('Connexion valide', () => {
         cy.fixture('users.json').then((users) => {
             const valid = users.validUser;
             cy.log('Saisie identifiant');

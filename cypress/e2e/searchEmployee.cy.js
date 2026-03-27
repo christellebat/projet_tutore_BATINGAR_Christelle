@@ -16,7 +16,7 @@ describe('Recherche d’un employé', () => {
         });
     });
 
-    it('Rechercher un employé existant avec scroll après Search', () => {
+    it('Rechercher un employé existant', () => {
 
         cy.contains('span', 'PIM', { timeout: 20000 }).click();
         cy.get('div.oxd-table', { timeout: 30000 }).should('be.visible');

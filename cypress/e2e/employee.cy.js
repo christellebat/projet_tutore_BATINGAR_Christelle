@@ -36,7 +36,7 @@ describe('Gestion des employés', () => {
     });
 
     // TEST NEGATIF : Last Name > 30 caractères
-    it('Afficher une erreur si le Last Name dépasse 30 caractères', () => {
+    it('Afficher une erreur si le Last ou First Name dépasse 30 caractères', () => {
         const longLastName = faker.string.alpha(31);
 
         cy.contains('span', 'PIM').click();
