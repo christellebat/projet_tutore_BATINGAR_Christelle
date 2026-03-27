@@ -84,7 +84,7 @@ Le système doit :
 * Username : Admin
 * Password : humain1234
 
-👉 Résultat :  Échec
+Résultat :  Échec
 
 ---
 
@@ -93,7 +93,7 @@ Le système doit :
 * Username : Admin
 * Password : admin123
 
-👉 Résultat :  Succès
+Résultat :  Succès
 
 ---
 
